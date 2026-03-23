@@ -1,0 +1,115 @@
+<!-- templates/bot/home.html -->
+{% extends 'base/base.html' %}
+
+{% block title %}Home - AI Healthcare Bot{% endblock %}
+
+{% block content %}
+<div class="row mt-4">
+    <div class="col-12 text-center mb-5">
+        <h1 class="display-4 text-white mb-3">
+            <i class="fas fa-robot"></i> AI Healthcare Assistant
+        </h1>
+        <p class="lead text-white">
+            Your 24/7 Medical Companion - Get instant health advice and locate nearby healthcare facilities
+        </p>
+    </div>
+</div>
+
+<div class="row g-4">
+    <!-- Chat with Bot -->
+    <div class="col-md-4">
+        <div class="card h-100 text-center">
+            <div class="card-body d-flex flex-column">
+                <div class="mb-3">
+                    <i class="fas fa-comments fa-4x text-primary"></i>
+                </div>
+                <h4 class="card-title">Chat with AI Bot</h4>
+                <p class="card-text">Ask health-related questions and get instant answers from our intelligent chatbot.</p>
+                <a href="{% url 'chat' %}" class="btn btn-primary mt-auto">
+                    Start Chatting <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Find Doctors -->
+    <div class="col-md-4">
+        <div class="card h-100 text-center">
+            <div class="card-body d-flex flex-column">
+                <div class="mb-3">
+                    <i class="fas fa-user-md fa-4x text-success"></i>
+                </div>
+                <h4 class="card-title">Find Doctors</h4>
+                <p class="card-text">Locate qualified doctors and specialists near your location instantly.</p>
+                <a href="{% url 'find_doctors' %}" class="btn btn-success mt-auto">
+                    Find Doctors <i class="fas fa-search"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Find Hospitals -->
+    <div class="col-md-4">
+        <div class="card h-100 text-center">
+            <div class="card-body d-flex flex-column">
+                <div class="mb-3">
+                    <i class="fas fa-hospital fa-4x text-danger"></i>
+                </div>
+                <h4 class="card-title">Find Hospitals</h4>
+                <p class="card-text">Find hospitals with emergency services and facilities near you.</p>
+                <a href="{% url 'find_hospitals' %}" class="btn btn-danger mt-auto">
+                    Find Hospitals <i class="fas fa-search"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Features Section -->
+<div class="row mt-5">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <h3 class="card-title text-center mb-4">
+                    <i class="fas fa-star"></i> Key Features
+                </h3>
+                <div class="row text-center">
+                    <div class="col-md-3">
+                        <i class="fas fa-clock fa-3x text-primary mb-2"></i>
+                        <h5>24/7 Available</h5>
+                        <p class="text-muted">Get health advice anytime, anywhere</p>
+                    </div>
+                    <div class="col-md-3">
+                        <i class="fas fa-brain fa-3x text-success mb-2"></i>
+                        <h5>AI Powered</h5>
+                        <p class="text-muted">Advanced machine learning for accurate responses</p>
+                    </div>
+                    <div class="col-md-3">
+                        <i class="fas fa-map-marker-alt fa-3x text-danger mb-2"></i>
+                        <h5>Location Based</h5>
+                        <p class="text-muted">Find nearby healthcare facilities</p>
+                    </div>
+                    <div class="col-md-3">
+                        <i class="fas fa-shield-alt fa-3x text-warning mb-2"></i>
+                        <h5>Secure & Private</h5>
+                        <p class="text-muted">Your data is safe with us</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Emergency Banner -->
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="alert alert-danger d-flex align-items-center" role="alert">
+            <i class="fas fa-exclamation-triangle fa-2x me-3"></i>
+            <div>
+                <h5 class="alert-heading mb-1">Medical Emergency?</h5>
+                <p class="mb-0">Call 108 (India Emergency Services) or visit the nearest hospital immediately!</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

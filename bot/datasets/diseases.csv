@@ -1,0 +1,9 @@
+name,description,symptoms,precautions,severity
+Fever,"Elevated body temperature, usually due to infection or illness","High temperature, body ache, chills, sweating, weakness","Rest, hydration, paracetamol, monitor temperature",medium
+Cold,Viral infection of upper respiratory tract,"Runny nose, sneezing, sore throat, cough, congestion","Rest, warm fluids, steam inhalation, avoid cold exposure",low
+Cough,Reflex action to clear airways,"Persistent coughing, throat irritation, phlegm","Warm water, honey, steam, avoid irritants",low
+Diabetes,Chronic condition affecting blood sugar regulation,"Frequent urination, excessive thirst, weight loss, blurred vision","Regular monitoring, medication, diet control, exercise",high
+Hypertension,Persistently elevated blood pressure,"Headache, shortness of breath, nosebleeds (in severe cases)","Low salt diet, regular exercise, medication, stress management",high
+Asthma,Chronic respiratory condition causing breathing difficulty,"Wheezing, shortness of breath, chest tightness, coughing","Avoid triggers, use inhaler, clean environment, regular checkups",high
+Gastroenteritis,Inflammation of digestive tract,"Stomach pain, diarrhea, nausea, vomiting","Hydration (ORS), bland diet, rest, hygiene",medium
+Headache,Pain in head or upper neck,"Head pain, sensitivity to light, nausea","Rest, hydration, pain relief, identify triggers",low

@@ -1,0 +1,11 @@
+{
+    "max_sequence_length": 100,
+    "vocab_size": 3000,
+    "classes": [
+        "emergency",
+        "information",
+        "prevention",
+        "symptoms",
+        "treatment"
+    ]
+}

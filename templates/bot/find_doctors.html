@@ -1,0 +1,129 @@
+<!-- templates/bot/find_doctors.html -->
+{% extends 'base/base.html' %}
+
+{% block title %}Find Doctors - AI Healthcare Bot{% endblock %}
+
+{% block content %}
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header bg-success text-white">
+                <h4 class="mb-0">
+                    <i class="fas fa-user-md"></i> Find Doctors Near You
+                </h4>
+            </div>
+            <div class="card-body">
+                <!-- Filters -->
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Specialization</label>
+                        <select class="form-select" id="specializationFilter">
+                            <option value="all">All Specializations</option>
+                            <option value="general">General Physician</option>
+                            <option value="cardiologist">Cardiologist</option>
+                            <option value="dermatologist">Dermatologist</option>
+                            <option value="orthopedic">Orthopedic</option>
+                            <option value="pediatrician">Pediatrician</option>
+                            <option value="gynecologist">Gynecologist</option>
+                            <option value="ent">ENT Specialist</option>
+                            <option value="neurologist">Neurologist</option>
+                            <option value="psychiatrist">Psychiatrist</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Search by Name or Location</label>
+                        <input type="text" class="form-control" id="searchInput" 
+                               placeholder="Search doctors...">
+                    </div>
+                </div>
+
+                <!-- Doctors List -->
+                <div id="doctorsList" class="row">
+                    {% for doctor in doctors %}
+                    <div class="col-md-6 col-lg-4 mb-3 doctor-card" 
+                         data-specialization="{{ doctor.specialization }}">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <h5 class="card-title text-success">
+                                    <i class="fas fa-user-md"></i> 
+                                    Dr. {{ doctor.name }}
+                                </h5>
+                                <p class="mb-1">
+                                    <strong><i class="fas fa-stethoscope"></i> Specialization:</strong><br>
+                                    {{ doctor.get_specialization_display }}
+                                </p>
+                                <p class="mb-1">
+                                    <strong><i class="fas fa-graduation-cap"></i> Qualification:</strong><br>
+                                    {{ doctor.qualification }}
+                                </p>
+                                <p class="mb-1">
+                                    <strong><i class="fas fa-clinic-medical"></i> Clinic:</strong><br>
+                                    {{ doctor.clinic_name }}
+                                </p>
+                                <p class="mb-1">
+                                    <strong><i class="fas fa-map-marker-alt"></i> Address:</strong><br>
+                                    {{ doctor.address }}
+                                </p>
+                                <p class="mb-1">
+                                    <strong><i class="fas fa-phone"></i> Phone:</strong> 
+                                    <a href="tel:{{ doctor.phone }}">{{ doctor.phone }}</a>
+                                </p>
+                                <p class="mb-1">
+                                    <strong><i class="fas fa-clock"></i> Timings:</strong><br>
+                                    {{ doctor.timings }}
+                                </p>
+                                {% if doctor.consultation_fee %}
+                                <p class="mb-0">
+                                    <strong><i class="fas fa-rupee-sign"></i> Fee:</strong> 
+                                    ₹{{ doctor.consultation_fee }}
+                                </p>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="col-12">
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle"></i> 
+                            No doctors found in the database. Please add doctors from the admin panel.
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    $(document).ready(function() {
+        // Filter by specialization
+        $('#specializationFilter').on('change', function() {
+            const selected = $(this).val();
+            
+            if (selected === 'all') {
+                $('.doctor-card').show();
+            } else {
+                $('.doctor-card').hide();
+                $(`.doctor-card[data-specialization="${selected}"]`).show();
+            }
+        });
+
+        // Search functionality
+        $('#searchInput').on('keyup', function() {
+            const searchText = $(this).val().toLowerCase();
+            
+            $('.doctor-card').each(function() {
+                const cardText = $(this).text().toLowerCase();
+                if (cardText.includes(searchText)) {
+                    $(this).show();
+                } else {
+                    $(this).hide();
+                }
+            });
+        });
+    });
+</script>
+{% endblock %}

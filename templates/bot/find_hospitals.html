@@ -1,0 +1,121 @@
+<!-- templates/bot/find_hospitals.html -->
+{% extends 'base/base.html' %}
+
+{% block title %}Find Hospitals - AI Healthcare Bot{% endblock %}
+
+{% block content %}
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header bg-danger text-white">
+                <h4 class="mb-0">
+                    <i class="fas fa-hospital"></i> Find Hospitals Near You
+                </h4>
+            </div>
+            <div class="card-body">
+                <!-- Filters -->
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Hospital Type</label>
+                        <select class="form-select" id="typeFilter">
+                            <option value="all">All Types</option>
+                            <option value="government">Government</option>
+                            <option value="private">Private</option>
+                            <option value="charitable">Charitable Trust</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Search by Name or Location</label>
+                        <input type="text" class="form-control" id="searchInput" 
+                               placeholder="Search hospitals...">
+                    </div>
+                </div>
+
+                <!-- Hospitals List -->
+                <div id="hospitalsList" class="row">
+                    {% for hospital in hospitals %}
+                    <div class="col-md-6 col-lg-4 mb-3 hospital-card" 
+                         data-type="{{ hospital.hospital_type }}">
+                        <div class="card h-100">
+                            {% if hospital.emergency_available %}
+                            <span class="badge bg-danger position-absolute top-0 end-0 m-2">
+                                <i class="fas fa-ambulance"></i> Emergency
+                            </span>
+                            {% endif %}
+                            <div class="card-body">
+                                <h5 class="card-title text-danger">
+                                    <i class="fas fa-hospital"></i> 
+                                    {{ hospital.name }}
+                                </h5>
+                                <p class="mb-1">
+                                    <strong><i class="fas fa-building"></i> Type:</strong><br>
+                                    {{ hospital.get_hospital_type_display }}
+                                </p>
+                                <p class="mb-1">
+                                    <strong><i class="fas fa-map-marker-alt"></i> Address:</strong><br>
+                                    {{ hospital.address }}
+                                </p>
+                                <p class="mb-1">
+                                    <strong><i class="fas fa-phone"></i> Phone:</strong> 
+                                    <a href="tel:{{ hospital.phone }}">{{ hospital.phone }}</a>
+                                </p>
+                                <p class="mb-1">
+                                    <strong><i class="fas fa-procedures"></i> Facilities:</strong><br>
+                                    {{ hospital.facilities|truncatewords:15 }}
+                                </p>
+                                {% if hospital.emergency_available %}
+                                <p class="mb-0">
+                                    <span class="badge bg-danger">
+                                        <i class="fas fa-ambulance"></i> 24/7 Emergency Available
+                                    </span>
+                                </p>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="col-12">
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle"></i> 
+                            No hospitals found in the database. Please add hospitals from the admin panel.
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    $(document).ready(function() {
+        // Filter by type
+        $('#typeFilter').on('change', function() {
+            const selected = $(this).val();
+            
+            if (selected === 'all') {
+                $('.hospital-card').show();
+            } else {
+                $('.hospital-card').hide();
+                $(`.hospital-card[data-type="${selected}"]`).show();
+            }
+        });
+
+        // Search functionality
+        $('#searchInput').on('keyup', function() {
+            const searchText = $(this).val().toLowerCase();
+            
+            $('.hospital-card').each(function() {
+                const cardText = $(this).text().toLowerCase();
+                if (cardText.includes(searchText)) {
+                    $(this).show();
+                } else {
+                    $(this).hide();
+                }
+            });
+        });
+    });
+</script>
+{% endblock %}

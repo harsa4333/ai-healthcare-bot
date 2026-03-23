@@ -1,0 +1,59 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.pyc
+*.pyo
+
+# Virtual Environment
+venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+
+# Django
+*.log
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+/media
+/staticfiles
+
+# Environment variables (IMPORTANT - Contains passwords!)
+.env
+*.env
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# ML Model files (too large for GitHub)
+bot/ml_model/saved_models/*.h5
+bot/ml_model/saved_models/*.pkl
+
+# Database
+*.sql
+*.sqlite
+*.db
+
+# Collected static files
+/static/
+/staticfiles/
+
+# Media files
+/media/
+
+# Temporary files
+*.bak
+*.tmp
+~*

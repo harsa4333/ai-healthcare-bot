@@ -1,0 +1,379 @@
+<!-- templates/bot/chat.html -->
+{% extends 'base/base.html' %}
+
+{% block title %}Chat - AI Healthcare Bot{% endblock %}
+
+{% block extra_css %}
+<style>
+    .chat-container {
+        background: white;
+        border-radius: 15px;
+        height: 70vh;
+        display: flex;
+        flex-direction: column;
+        box-shadow: 0 5px 30px rgba(0,0,0,0.2);
+    }
+    
+    .chat-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 20px;
+        border-radius: 15px 15px 0 0;
+    }
+    
+    .chat-messages {
+        flex: 1;
+        overflow-y: auto;
+        padding: 20px;
+        background: #f8f9fa;
+    }
+    
+    .message {
+        margin-bottom: 15px;
+        display: flex;
+        animation: fadeIn 0.3s;
+    }
+    
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .message.user {
+        justify-content: flex-end;
+    }
+    
+    .message-bubble {
+        max-width: 70%;
+        padding: 12px 18px;
+        border-radius: 20px;
+        word-wrap: break-word;
+    }
+    
+    .message.bot .message-bubble {
+        background: #e3f2fd;
+        color: #333;
+        border-bottom-left-radius: 5px;
+    }
+    
+    .message.user .message-bubble {
+        background: #667eea;
+        color: white;
+        border-bottom-right-radius: 5px;
+    }
+    
+    .message-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 10px;
+        font-size: 20px;
+    }
+    
+    .bot-icon {
+        background: #4CAF50;
+        color: white;
+    }
+    
+    .user-icon {
+        background: #667eea;
+        color: white;
+    }
+    
+    .chat-input-area {
+        padding: 20px;
+        background: white;
+        border-radius: 0 0 15px 15px;
+        border-top: 1px solid #e0e0e0;
+    }
+    
+    .typing-indicator {
+        display: none;
+        padding: 10px;
+    }
+    
+    .typing-indicator span {
+        display: inline-block;
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: #667eea;
+        margin: 0 2px;
+        animation: typing 1.4s infinite;
+    }
+    
+    .typing-indicator span:nth-child(2) {
+        animation-delay: 0.2s;
+    }
+    
+    .typing-indicator span:nth-child(3) {
+        animation-delay: 0.4s;
+    }
+    
+    @keyframes typing {
+        0%, 60%, 100% { transform: translateY(0); }
+        30% { transform: translateY(-10px); }
+    }
+    
+    .confidence-badge {
+        font-size: 0.75rem;
+        margin-top: 5px;
+        display: inline-block;
+    }
+
+    .emergency-message {
+        background: #ffebee !important;
+        border: 2px solid #f44336 !important;
+        color: #c62828 !important;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="chat-container">
+            <!-- Chat Header -->
+            <div class="chat-header">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h4 class="mb-0">
+                            <i class="fas fa-robot"></i> AI Healthcare Assistant
+                        </h4>
+                        <small>Ask me anything about your health</small>
+                    </div>
+                    <div>
+                        <form method="POST" action="{% url 'clear_chat' %}" style="display: inline;">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-light btn-sm" 
+                                    onclick="return confirm('Clear chat history?')">
+                                <i class="fas fa-trash"></i> Clear
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Chat Messages -->
+            <div class="chat-messages" id="chatMessages">
+                <!-- Welcome Message -->
+                <div class="message bot">
+                    <div class="message-icon bot-icon">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                    <div class="message-bubble">
+                        <strong>Hello {{ user.username }}! 👋</strong><br>
+                        I'm your AI Healthcare Assistant. I can help you with:
+                        <ul class="mb-0 mt-2">
+                            <li>Health-related questions</li>
+                            <li>Symptom information</li>
+                            <li>General precautions</li>
+                            <li>Finding nearby doctors and hospitals</li>
+                        </ul>
+                        <div class="alert alert-warning mt-2 mb-0 p-2">
+                            <small><i class="fas fa-exclamation-triangle"></i> 
+                            For emergencies, call 108 immediately!</small>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Previous Chat History -->
+                {% for chat in chat_history %}
+                    <div class="message user">
+                        <div class="message-bubble">
+                            {{ chat.question }}
+                        </div>
+                        <div class="message-icon user-icon">
+                            <i class="fas fa-user"></i>
+                        </div>
+                    </div>
+                    
+                    <div class="message bot">
+                        <div class="message-icon bot-icon">
+                            <i class="fas fa-robot"></i>
+                        </div>
+                        <div class="message-bubble">
+                            {{ chat.answer|linebreaks }}
+                            {% if chat.confidence_score > 0 %}
+                                <span class="badge bg-info confidence-badge">
+                                    Confidence: {{ chat.confidence_score|floatformat:0 }}%
+                                </span>
+                            {% endif %}
+                        </div>
+                    </div>
+                {% endfor %}
+
+                <!-- Typing Indicator -->
+                <div class="message bot typing-indicator" id="typingIndicator">
+                    <div class="message-icon bot-icon">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                    <div class="message-bubble">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Chat Input -->
+            <div class="chat-input-area">
+                <form id="chatForm">
+                    {% csrf_token %}
+                    <div class="input-group">
+                        <input type="text" class="form-control" id="messageInput" 
+                               placeholder="Type your health question here..." 
+                               autocomplete="off" required>
+                        <button type="submit" class="btn btn-primary" id="sendBtn">
+                            <i class="fas fa-paper-plane"></i> Send
+                        </button>
+                    </div>
+                </form>
+                <small class="text-muted mt-2 d-block">
+                    <i class="fas fa-info-circle"></i> Press Enter to send
+                </small>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    $(document).ready(function() {
+        const chatMessages = $('#chatMessages');
+        const chatForm = $('#chatForm');
+        const messageInput = $('#messageInput');
+        const sendBtn = $('#sendBtn');
+        const typingIndicator = $('#typingIndicator');
+
+        // Auto scroll to bottom
+        function scrollToBottom() {
+            chatMessages.scrollTop(chatMessages[0].scrollHeight);
+        }
+
+        // Initial scroll
+        scrollToBottom();
+
+        // Handle form submission
+        chatForm.on('submit', function(e) {
+            e.preventDefault();
+            
+            const message = messageInput.val().trim();
+            if (!message) return;
+
+            // Disable input
+            sendBtn.prop('disabled', true);
+            messageInput.prop('disabled', true);
+
+            // Add user message
+            const userMessage = `
+                <div class="message user">
+                    <div class="message-bubble">${escapeHtml(message)}</div>
+                    <div class="message-icon user-icon">
+                        <i class="fas fa-user"></i>
+                    </div>
+                </div>
+            `;
+            typingIndicator.before(userMessage);
+            messageInput.val('');
+            scrollToBottom();
+
+            // Show typing indicator
+            typingIndicator.show();
+            scrollToBottom();
+
+            // Send AJAX request
+            $.ajax({
+                url: "{% url 'send_message' %}",
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                contentType: 'application/json',
+                data: JSON.stringify({
+                    message: message
+                }),
+                success: function(response) {
+                    if (response.success) {
+                        // Add bot response
+                        const confidenceBadge = response.confidence > 0 
+                            ? `<span class="badge bg-info confidence-badge">
+                                Confidence: ${Math.round(response.confidence * 100)}%
+                               </span>` 
+                            : '';
+                        
+                        const emergencyClass = response.is_emergency 
+                            ? 'emergency-message' 
+                            : '';
+                        
+                        const botMessage = `
+                            <div class="message bot">
+                                <div class="message-icon bot-icon">
+                                    <i class="fas fa-robot"></i>
+                                </div>
+                                <div class="message-bubble ${emergencyClass}">
+                                    ${escapeHtml(response.answer).replace(/\n/g, '<br>')}
+                                    ${confidenceBadge}
+                                </div>
+                            </div>
+                        `;
+                        typingIndicator.before(botMessage);
+                    } else {
+                        // Show error
+                        const errorMessage = `
+                            <div class="message bot">
+                                <div class="message-icon bot-icon">
+                                    <i class="fas fa-robot"></i>
+                                </div>
+                                <div class="message-bubble alert alert-danger">
+                                    <i class="fas fa-exclamation-circle"></i> 
+                                    ${response.error || 'An error occurred. Please try again.'}
+                                </div>
+                            </div>
+                        `;
+                        typingIndicator.before(errorMessage);
+                    }
+                },
+                error: function() {
+                    const errorMessage = `
+                        <div class="message bot">
+                            <div class="message-icon bot-icon">
+                                <i class="fas fa-robot"></i>
+                            </div>
+                            <div class="message-bubble alert alert-danger">
+                                <i class="fas fa-exclamation-circle"></i> 
+                                Connection error. Please try again.
+                            </div>
+                        </div>
+                    `;
+                    typingIndicator.before(errorMessage);
+                },
+                complete: function() {
+                    // Hide typing indicator and re-enable input
+                    typingIndicator.hide();
+                    sendBtn.prop('disabled', false);
+                    messageInput.prop('disabled', false);
+                    messageInput.focus();
+                    scrollToBottom();
+                }
+            });
+        });
+
+        // Escape HTML to prevent XSS
+        function escapeHtml(text) {
+            const map = {
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#039;'
+            };
+            return text.replace(/[&<>"']/g, m => map[m]);
+        }
+    });
+</script>
+{% endblock %}
