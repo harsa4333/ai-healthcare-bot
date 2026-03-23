@@ -234,7 +234,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 **Your Name**
 - GitHub: [@harsa4333](https://github.com/harsa4333)
-- LinkedIn: [Your LinkedIn](www.linkedin.com/in/harshvardhan-kumar-b4533a2b3)
+- LinkedIn: [Harshvardhan Kumar](www.linkedin.com/in/harshvardhan-kumar-b4533a2b3)
 - Email: digital.harsa4@gmail.com
 
 ## 🙏 Acknowledgments
